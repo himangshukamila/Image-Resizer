@@ -1,4 +1,14 @@
-import { NamingSettings, OutputSettings, ProcessedImageResult, ResizeSettings, SupportedFormat } from '../types';
+import {
+  AdjustmentSettings,
+  NamingSettings,
+  OutputSettings,
+  ProcessedImageResult,
+  ResizeSettings,
+  SupportedFormat,
+  TargetSizeSettings,
+  TransformSettings,
+  WatermarkSettings,
+} from '../types';
 import { calculateSavings, calculateTargetDimensions, getMimeTypeForOutput, resizeImageCanvas } from '../utils/imageUtils';
 import { generateFileName } from '../utils/fileUtils';
 
@@ -43,7 +53,11 @@ export class ImageProcessingService {
     originalFormat: SupportedFormat,
     resizeSettings: ResizeSettings,
     outputSettings: OutputSettings,
-    namingSettings: NamingSettings
+    transformSettings?: TransformSettings,
+    targetSizeSettings?: TargetSizeSettings,
+    watermarkSettings?: WatermarkSettings,
+    adjustmentSettings?: AdjustmentSettings,
+    namingSettings?: NamingSettings
   ): Promise<ProcessedImageResult> {
     const targetDim = calculateTargetDimensions(resizeSettings, originalWidth, originalHeight);
     const mimeType = getMimeTypeForOutput(outputSettings.format, originalFormat);
@@ -51,7 +65,7 @@ export class ImageProcessingService {
 
     let resultBlob: Blob;
 
-    // 100% Native Web Worker OffscreenCanvas Execution (Pure C++ browser engine speed)
+    // Execute Native Web Worker OffscreenCanvas Pipeline
     if (this.worker) {
       try {
         resultBlob = await new Promise<Blob>((resolve, reject) => {
@@ -70,6 +84,10 @@ export class ImageProcessingService {
             targetHeight: targetDim.height,
             mimeType,
             quality,
+            transformSettings,
+            targetSizeSettings,
+            watermarkSettings,
+            adjustmentSettings,
           });
         });
       } catch {
@@ -86,7 +104,7 @@ export class ImageProcessingService {
       targetDim.height,
       outputSettings.format,
       originalFormat,
-      namingSettings
+      namingSettings || { pattern: '{filename}_resized', suffix: '_resized', prefix: '', preserveOriginalName: false }
     );
 
     const url = URL.createObjectURL(resultBlob);

@@ -2,19 +2,27 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import {
   COMPRESSION_PRESETS,
+  DEFAULT_ADJUSTMENT_SETTINGS,
   DEFAULT_NAMING_SETTINGS,
   DEFAULT_OUTPUT_SETTINGS,
   DEFAULT_RESIZE_SETTINGS,
+  DEFAULT_TARGET_SIZE_SETTINGS,
+  DEFAULT_TRANSFORM_SETTINGS,
+  DEFAULT_WATERMARK_SETTINGS,
 } from '../constants';
 import { imageProcessingService } from '../services/imageProcessingService';
 import {
+  AdjustmentSettings,
   CompressionPreset,
   ImageFileItem,
   NamingSettings,
   OutputSettings,
   ResizeSettings,
+  TargetSizeSettings,
   ThemeMode,
   ToastMessage,
+  TransformSettings,
+  WatermarkSettings,
 } from '../types';
 import { getFormatFromMime } from '../utils/fileUtils';
 import { detectCorruptedImageAndGetDimensions } from '../utils/validationUtils';
@@ -25,9 +33,13 @@ interface ImageState {
   selectedImageId: string | null;
   isProcessingAll: boolean;
 
-  // Settings (persisted)
+  // Settings
   resizeSettings: ResizeSettings;
   outputSettings: OutputSettings;
+  transformSettings: TransformSettings;
+  targetSizeSettings: TargetSizeSettings;
+  watermarkSettings: WatermarkSettings;
+  adjustmentSettings: AdjustmentSettings;
   namingSettings: NamingSettings;
   theme: ThemeMode;
 
@@ -44,7 +56,12 @@ interface ImageState {
 
   updateResizeSettings: (settings: Partial<ResizeSettings>) => void;
   updateOutputSettings: (settings: Partial<OutputSettings>) => void;
+  updateTransformSettings: (settings: Partial<TransformSettings>) => void;
+  updateTargetSizeSettings: (settings: Partial<TargetSizeSettings>) => void;
+  updateWatermarkSettings: (settings: Partial<WatermarkSettings>) => void;
+  updateAdjustmentSettings: (settings: Partial<AdjustmentSettings>) => void;
   updateNamingSettings: (settings: Partial<NamingSettings>) => void;
+
   applyCompressionPreset: (preset: CompressionPreset) => void;
   resetAllSettings: () => void;
 
@@ -68,6 +85,10 @@ export const useImageStore = create<ImageState>()(
 
       resizeSettings: DEFAULT_RESIZE_SETTINGS,
       outputSettings: DEFAULT_OUTPUT_SETTINGS,
+      transformSettings: DEFAULT_TRANSFORM_SETTINGS,
+      targetSizeSettings: DEFAULT_TARGET_SIZE_SETTINGS,
+      watermarkSettings: DEFAULT_WATERMARK_SETTINGS,
+      adjustmentSettings: DEFAULT_ADJUSTMENT_SETTINGS,
       namingSettings: DEFAULT_NAMING_SETTINGS,
       theme: 'light',
 
@@ -90,13 +111,11 @@ export const useImageStore = create<ImageState>()(
         if (filesArray.length === 0) return;
 
         const newItems: ImageFileItem[] = [];
-        let errorCount = 0;
 
         for (const file of filesArray) {
           const validation = await detectCorruptedImageAndGetDimensions(file);
 
           if (!validation.valid || !validation.width || !validation.height) {
-            errorCount++;
             get().addToast({
               type: 'error',
               title: 'Upload Failed',
@@ -134,7 +153,6 @@ export const useImageStore = create<ImageState>()(
             const currentSelected = state.selectedImageId;
             const newSelected = currentSelected || newItems[0].id;
 
-            // Update default dimensions in resize settings if first item loaded
             const firstItem = newItems[0];
             const updatedResizeSettings =
               state.images.length === 0
@@ -158,7 +176,6 @@ export const useImageStore = create<ImageState>()(
             description: `Successfully added ${newItems.length} image${newItems.length > 1 ? 's' : ''}.`,
           });
 
-          // Automatically trigger background process for newly added images
           newItems.forEach((item) => {
             get().processSingleImage(item.id);
           });
@@ -214,31 +231,37 @@ export const useImageStore = create<ImageState>()(
       setSelectedImageId: (id) => set({ selectedImageId: id }),
 
       updateResizeSettings: (partial) => {
-        set((state) => {
-          const newSettings = { ...state.resizeSettings, ...partial };
-          return { resizeSettings: newSettings };
-        });
-
-        // Trigger re-process for active queue
-        const activeImages = get().images;
-        activeImages.forEach((img) => get().processSingleImage(img.id));
+        set((state) => ({ resizeSettings: { ...state.resizeSettings, ...partial } }));
+        get().images.forEach((img) => get().processSingleImage(img.id));
       },
 
       updateOutputSettings: (partial) => {
-        set((state) => {
-          const newSettings = { ...state.outputSettings, ...partial };
-          return { outputSettings: newSettings };
-        });
+        set((state) => ({ outputSettings: { ...state.outputSettings, ...partial } }));
+        get().images.forEach((img) => get().processSingleImage(img.id));
+      },
 
-        // Trigger re-process
-        const activeImages = get().images;
-        activeImages.forEach((img) => get().processSingleImage(img.id));
+      updateTransformSettings: (partial) => {
+        set((state) => ({ transformSettings: { ...state.transformSettings, ...partial } }));
+        get().images.forEach((img) => get().processSingleImage(img.id));
+      },
+
+      updateTargetSizeSettings: (partial) => {
+        set((state) => ({ targetSizeSettings: { ...state.targetSizeSettings, ...partial } }));
+        get().images.forEach((img) => get().processSingleImage(img.id));
+      },
+
+      updateWatermarkSettings: (partial) => {
+        set((state) => ({ watermarkSettings: { ...state.watermarkSettings, ...partial } }));
+        get().images.forEach((img) => get().processSingleImage(img.id));
+      },
+
+      updateAdjustmentSettings: (partial) => {
+        set((state) => ({ adjustmentSettings: { ...state.adjustmentSettings, ...partial } }));
+        get().images.forEach((img) => get().processSingleImage(img.id));
       },
 
       updateNamingSettings: (partial) => {
-        set((state) => ({
-          namingSettings: { ...state.namingSettings, ...partial },
-        }));
+        set((state) => ({ namingSettings: { ...state.namingSettings, ...partial } }));
       },
 
       applyCompressionPreset: (preset) => {
@@ -258,8 +281,7 @@ export const useImageStore = create<ImageState>()(
           },
         }));
 
-        const activeImages = get().images;
-        activeImages.forEach((img) => get().processSingleImage(img.id));
+        get().images.forEach((img) => get().processSingleImage(img.id));
       },
 
       resetAllSettings: () => {
@@ -276,6 +298,10 @@ export const useImageStore = create<ImageState>()(
             height: defaultH,
           },
           outputSettings: DEFAULT_OUTPUT_SETTINGS,
+          transformSettings: DEFAULT_TRANSFORM_SETTINGS,
+          targetSizeSettings: DEFAULT_TARGET_SIZE_SETTINGS,
+          watermarkSettings: DEFAULT_WATERMARK_SETTINGS,
+          adjustmentSettings: DEFAULT_ADJUSTMENT_SETTINGS,
           namingSettings: DEFAULT_NAMING_SETTINGS,
         });
 
@@ -285,8 +311,7 @@ export const useImageStore = create<ImageState>()(
           description: 'Original size and settings restored.',
         });
 
-        const activeImages = get().images;
-        activeImages.forEach((img) => get().processSingleImage(img.id));
+        get().images.forEach((img) => get().processSingleImage(img.id));
       },
 
       setTheme: (theme) => set({ theme }),
@@ -297,7 +322,17 @@ export const useImageStore = create<ImageState>()(
         })),
 
       processSingleImage: async (id) => {
-        const { images, resizeSettings, outputSettings, namingSettings } = get();
+        const {
+          images,
+          resizeSettings,
+          outputSettings,
+          transformSettings,
+          targetSizeSettings,
+          watermarkSettings,
+          adjustmentSettings,
+          namingSettings,
+        } = get();
+
         const targetIndex = images.findIndex((img) => img.id === id);
         if (targetIndex === -1) return;
 
@@ -318,6 +353,10 @@ export const useImageStore = create<ImageState>()(
             targetItem.originalFormat,
             resizeSettings,
             outputSettings,
+            transformSettings,
+            targetSizeSettings,
+            watermarkSettings,
+            adjustmentSettings,
             namingSettings
           );
 
@@ -362,7 +401,7 @@ export const useImageStore = create<ImageState>()(
         get().addToast({
           type: 'success',
           title: 'Batch Complete',
-          description: `All ${images.length} images resized & converted.`,
+          description: `All ${images.length} images processed.`,
         });
       },
     }),
@@ -371,6 +410,10 @@ export const useImageStore = create<ImageState>()(
       partialize: (state) => ({
         resizeSettings: state.resizeSettings,
         outputSettings: state.outputSettings,
+        transformSettings: state.transformSettings,
+        targetSizeSettings: state.targetSizeSettings,
+        watermarkSettings: state.watermarkSettings,
+        adjustmentSettings: state.adjustmentSettings,
         namingSettings: state.namingSettings,
         theme: state.theme,
       }),

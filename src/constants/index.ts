@@ -1,4 +1,12 @@
-import { AspectRatioPreset, CompressionPreset, OutputFormat, SupportedFormat } from '../types';
+import {
+  AdjustmentSettings,
+  AspectRatioPreset,
+  CompressionPreset,
+  OutputFormat,
+  TargetSizeSettings,
+  TransformSettings,
+  WatermarkSettings,
+} from '../types';
 
 export const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024; // 50MB limit
 
@@ -51,9 +59,44 @@ export const DEFAULT_OUTPUT_SETTINGS = {
   compressionPreset: 'medium' as CompressionPreset,
 };
 
+export const DEFAULT_TRANSFORM_SETTINGS: TransformSettings = {
+  rotation: 0,
+  flipH: false,
+  flipV: false,
+};
+
+export const DEFAULT_TARGET_SIZE_SETTINGS: TargetSizeSettings = {
+  enabled: false,
+  targetSizeKB: 200,
+};
+
+export const DEFAULT_WATERMARK_SETTINGS: WatermarkSettings = {
+  enabled: false,
+  text: '',
+  opacity: 0.7,
+  fontSize: 24,
+  position: 'bottom-right',
+};
+
+export const DEFAULT_ADJUSTMENT_SETTINGS: AdjustmentSettings = {
+  brightness: 100,
+  contrast: 100,
+  grayscale: false,
+  sepia: false,
+};
+
 export const DEFAULT_NAMING_SETTINGS = {
   pattern: '{filename}_resized',
   suffix: '_resized',
   prefix: '',
   preserveOriginalName: false,
 };
+
+export const SOCIAL_MEDIA_PRESETS = [
+  { id: 'ig-post', label: 'Instagram Post', width: 1080, height: 1080, ratio: '1:1' },
+  { id: 'ig-story', label: 'Instagram Story', width: 1080, height: 1920, ratio: '9:16' },
+  { id: 'yt-thumb', label: 'YouTube Thumb', width: 1280, height: 720, ratio: '16:9' },
+  { id: 'tw-header', label: 'Twitter Header', width: 1500, height: 500, ratio: '3:1' },
+  { id: 'li-banner', label: 'LinkedIn Banner', width: 1584, height: 396, ratio: '4:1' },
+  { id: 'fb-cover', label: 'Facebook Cover', width: 820, height: 312, ratio: '2.6:1' },
+];
