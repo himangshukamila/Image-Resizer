@@ -9,7 +9,7 @@ import { useImageStore } from '../../store/useImageStore';
 import { RotateCcw } from 'lucide-react';
 
 export const SettingsSidebar: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'resize' | 'format' | 'naming'>('resize');
+  const [activeTab, setActiveTab] = useState<'resize' | 'compression' | 'format' | 'naming'>('resize');
   const resetAllSettings = useImageStore((state) => state.resetAllSettings);
 
   return (
@@ -17,7 +17,7 @@ export const SettingsSidebar: React.FC = () => {
       {/* Control Header & Reset Button */}
       <div className="flex items-center justify-between pb-2 border-b border-zinc-200 dark:border-zinc-800">
         <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">
-          Resize Controls
+          Image Options
         </span>
         <button
           type="button"
@@ -40,7 +40,18 @@ export const SettingsSidebar: React.FC = () => {
               : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'
           }`}
         >
-          Resize & Scale
+          Resize
+        </button>
+
+        <button
+          onClick={() => setActiveTab('compression')}
+          className={`flex-1 py-1.5 text-xs font-semibold rounded transition-colors ${
+            activeTab === 'compression'
+              ? 'bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-xs'
+              : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'
+          }`}
+        >
+          Compression
         </button>
 
         <button
@@ -51,7 +62,7 @@ export const SettingsSidebar: React.FC = () => {
               : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'
           }`}
         >
-          Format & Quality
+          Format
         </button>
 
         <button
@@ -76,13 +87,9 @@ export const SettingsSidebar: React.FC = () => {
           </>
         )}
 
-        {activeTab === 'format' && (
-          <>
-            <FormatControls />
-            <hr className="border-zinc-200 dark:border-zinc-800" />
-            <QualityControls />
-          </>
-        )}
+        {activeTab === 'compression' && <QualityControls />}
+
+        {activeTab === 'format' && <FormatControls />}
 
         {activeTab === 'naming' && <NamingControls />}
       </div>
