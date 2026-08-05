@@ -1,9 +1,8 @@
+import imageCompression from 'browser-image-compression';
 import { NamingSettings, OutputSettings, ProcessedImageResult, ResizeSettings, SupportedFormat } from '../types';
-
 import { calculateSavings, calculateTargetDimensions, getMimeTypeForOutput, resizeImageCanvas } from '../utils/imageUtils';
 import { generateFileName } from '../utils/fileUtils';
 
-// Inline worker creation using Vite web worker URL import syntax
 export class ImageProcessingService {
   private worker: Worker | null = null;
   private workerCallbacks: Map<string, (msg: { blob?: Blob; error?: string }) => void> = new Map();
@@ -53,7 +52,7 @@ export class ImageProcessingService {
 
     let resultBlob: Blob;
 
-    // Try Web Worker execution first
+    // Step 1: High-precision Lanczos/Bicubic step-down canvas resizing
     if (this.worker) {
       try {
         resultBlob = await new Promise<Blob>((resolve, reject) => {
@@ -75,11 +74,30 @@ export class ImageProcessingService {
           });
         });
       } catch {
-        // Fall back to main thread canvas
         resultBlob = await this.processOnMainThread(file, targetDim.width, targetDim.height, mimeType, quality);
       }
     } else {
       resultBlob = await this.processOnMainThread(file, targetDim.width, targetDim.height, mimeType, quality);
+    }
+
+    // Step 2: Extra multi-pass compression optimization via browser-image-compression if needed
+    if (quality < 100 && (mimeType === 'image/jpeg' || mimeType === 'image/webp')) {
+      try {
+        const intermediateFile = new File([resultBlob], file.name, { type: mimeType });
+        const options = {
+          maxSizeMB: 50,
+          maxWidthOrHeight: Math.max(targetDim.width, targetDim.height),
+          useWebWorker: true,
+          fileType: mimeType,
+          initialQuality: quality / 100,
+        };
+        const compressedBlob = await imageCompression(intermediateFile, options);
+        if (compressedBlob.size > 0 && compressedBlob.size <= resultBlob.size) {
+          resultBlob = compressedBlob;
+        }
+      } catch {
+        // Fall back to step 1 result if browser-image-compression is bypassed
+      }
     }
 
     const { savingsPercentage, compressionRatio } = calculateSavings(file.size, resultBlob.size);
