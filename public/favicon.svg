@@ -1,0 +1,35 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="monoTop" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22d3ee" />
+      <stop offset="100%" stop-color="#0891b2" />
+    </linearGradient>
+    <linearGradient id="monoSide" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#155e75" />
+      <stop offset="100%" stop-color="#0e7490" />
+    </linearGradient>
+
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="12" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Dark Background Container -->
+  <rect width="512" height="512" rx="128" fill="#030712" />
+
+  <!-- Outer Ambient Glow -->
+  <circle cx="256" cy="256" r="180" fill="#22d3ee" opacity="0.1" filter="blur(30px)" />
+
+  <!-- Maximized Monolithic Pillars -->
+  <g stroke="#030712" stroke-width="12" stroke-linejoin="round">
+    <!-- Left Pillar -->
+    <polygon points="91,168 201,102 201,366 91,432" fill="url(#monoTop)" />
+    <!-- Middle Higher Pillar -->
+    <polygon points="201,102 311,36 311,300 201,366" fill="#67e8f9" />
+    <!-- Right Lower Pillar -->
+    <polygon points="311,212 421,146 421,410 311,476" fill="url(#monoSide)" />
+  </g>
+</svg>
+
+
