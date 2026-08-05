@@ -46,6 +46,7 @@ interface ImageState {
   // UI States
   previewViewMode: 'single' | 'split' | 'sideBySide';
   zoomLevel: number;
+  loupeEnabled: boolean;
   toasts: ToastMessage[];
 
   // Actions
@@ -68,6 +69,7 @@ interface ImageState {
   setTheme: (theme: ThemeMode) => void;
   setPreviewViewMode: (mode: 'single' | 'split' | 'sideBySide') => void;
   setZoomLevel: (zoom: number | ((prev: number) => number)) => void;
+  setLoupeEnabled: (enabled: boolean) => void;
 
   processSingleImage: (id: string) => Promise<void>;
   processAllImages: () => Promise<void>;
@@ -94,6 +96,7 @@ export const useImageStore = create<ImageState>()(
 
       previewViewMode: 'split',
       zoomLevel: 1,
+      loupeEnabled: true,
       toasts: [],
 
       addToast: (toast) => {
@@ -320,6 +323,7 @@ export const useImageStore = create<ImageState>()(
         set((state) => ({
           zoomLevel: typeof zoomOrFn === 'function' ? zoomOrFn(state.zoomLevel) : zoomOrFn,
         })),
+      setLoupeEnabled: (enabled) => set({ loupeEnabled: enabled }),
 
       processSingleImage: async (id) => {
         const {
@@ -360,18 +364,25 @@ export const useImageStore = create<ImageState>()(
             namingSettings
           );
 
-          set((state) => ({
-            images: state.images.map((img) =>
-              img.id === id
-                ? {
-                    ...img,
-                    status: 'done',
-                    progress: 100,
-                    processedResult: result,
-                  }
-                : img
-            ),
-          }));
+          set((state) => {
+            const currentItem = state.images.find((img) => img.id === id);
+            if (currentItem?.processedResult?.url) {
+              URL.revokeObjectURL(currentItem.processedResult.url);
+            }
+
+            return {
+              images: state.images.map((img) =>
+                img.id === id
+                  ? {
+                      ...img,
+                      status: 'done',
+                      progress: 100,
+                      processedResult: result,
+                    }
+                  : img
+              ),
+            };
+          });
         } catch (err: unknown) {
           const errorMsg = err instanceof Error ? err.message : 'Failed to process image';
           set((state) => ({

@@ -52,7 +52,8 @@ export function generateFileName(
   naming: NamingSettings
 ): string {
   const extIndex = originalName.lastIndexOf('.');
-  const baseName = extIndex !== -1 ? originalName.slice(0, extIndex) : originalName;
+  let baseName = extIndex !== -1 ? originalName.slice(0, extIndex) : originalName;
+  baseName = baseName.replace(/[/\\?%*:|"<>]/g, '_').trim() || 'image';
   const targetExt = getTargetFileExtension(format, originalFormat);
 
   if (naming.preserveOriginalName && !naming.suffix && !naming.prefix) {
