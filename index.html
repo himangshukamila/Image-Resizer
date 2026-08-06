@@ -6,6 +6,8 @@
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#09090b" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
     <!-- Primary Meta Tags -->
@@ -36,31 +38,63 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
-    <!-- JSON-LD Structured Data Schema for Google WebApplication Rich Snippets -->
+    <!-- JSON-LD Structured Data Schema for WebApplication & FAQPage Rich Snippets -->
     <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "ImageResizer Studio",
-        "url": "https://image-resizer-rhn7.onrender.com/",
-        "description": "High-performance client-side image resizer, compressor, and format converter web application supporting JPG, PNG, WEBP, GIF, and AVIF.",
-        "applicationCategory": "MultimediaApplication",
-        "operatingSystem": "All",
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "USD"
+      [
+        {
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          "name": "ImageResizer Studio",
+          "url": "https://image-resizer-rhn7.onrender.com/",
+          "description": "High-performance client-side image resizer, compressor, and format converter web application supporting JPG, PNG, WEBP, GIF, and AVIF.",
+          "applicationCategory": "MultimediaApplication",
+          "operatingSystem": "All",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "featureList": [
+            "Batch Image Resizing",
+            "Lossless & Lossy Image Compression",
+            "Format Conversion (JPG, PNG, WEBP, AVIF)",
+            "Social Media Presets",
+            "Target File Size Matching",
+            "Watermark Overlay",
+            "100% In-Browser Privacy"
+          ]
         },
-        "featureList": [
-          "Batch Image Resizing",
-          "Lossless & Lossy Image Compression",
-          "Format Conversion (JPG, PNG, WEBP, AVIF)",
-          "Social Media Presets",
-          "Target File Size Matching",
-          "Watermark Overlay",
-          "100% In-Browser Privacy"
-        ]
-      }
+        {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Is my uploaded image sent to any external server?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "No. All image resizing, compression, and format conversions take place 100% inside your browser using Web Workers and OffscreenCanvas. Your images never leave your device."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How can I compress an image to a specific KB limit (e.g. under 200KB)?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Go to the Compression tab, enable 'Compress to Max File Size', and enter your desired target size in KB (e.g. 200). The app automatically calculates the exact quality percentage needed to stay under your limit."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What image formats are supported?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "ImageResizer Studio supports uploading JPG, JPEG, PNG, WEBP, GIF, and AVIF formats, and exporting to JPG, PNG, WEBP, or AVIF."
+              }
+            }
+          ]
+        }
+      ]
     </script>
   </head>
   <body class="bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 antialiased selection:bg-zinc-900 selection:text-white dark:selection:bg-zinc-100 dark:selection:text-zinc-900">

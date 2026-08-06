@@ -1,0 +1,28 @@
+{
+  "short_name": "ImageResizer",
+  "name": "ImageResizer Studio — Free In-Browser Resizer & Compressor",
+  "icons": [
+    {
+      "src": "/favicon-48x48.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#09090b",
+  "theme_color": "#09090b",
+  "display": "standalone",
+  "orientation": "any",
+  "description": "High-performance client-side image resizer, batch compressor, and format converter web application."
+}

@@ -7,6 +7,7 @@ import { ComparisonViewer } from '../components/preview/ComparisonViewer';
 import { StatsPanel } from '../components/preview/StatsPanel';
 import { SettingsSidebar } from '../components/controls/SettingsSidebar';
 import { DownloadActionBar } from '../components/layout/DownloadActionBar';
+import { FaqSection } from '../components/layout/FaqSection';
 import { ToastContainer } from '../components/ui/ToastContainer';
 import { useClipboardPaste } from '../hooks/useClipboardPaste';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
@@ -32,6 +33,7 @@ export const ResizerApp: React.FC = () => {
             <section aria-label="Image Upload Zone">
               <Dropzone compact={false} />
             </section>
+            <FaqSection />
           </>
         ) : (
           <>
@@ -58,6 +60,8 @@ export const ResizerApp: React.FC = () => {
                 <SettingsSidebar />
               </div>
             </div>
+
+            <FaqSection />
           </>
         )}
       </main>
