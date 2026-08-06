@@ -45,11 +45,11 @@ export const DownloadActionBar: React.FC = () => {
 
   return (
     <div className="sticky bottom-4 z-40 max-w-4xl mx-auto px-4 w-full">
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 rounded-2xl bg-zinc-900 text-white shadow-2xl border border-zinc-800 backdrop-blur-md">
-        <div className="text-xs font-medium text-zinc-300">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 rounded-2xl bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-2xl border border-zinc-200 dark:border-zinc-800 transition-colors">
+        <div className="text-xs font-medium text-zinc-600 dark:text-zinc-400">
           <span>{doneItems.length} of {images.length} images processed</span>
           {totalSavedPct > 0 && (
-            <span className="ml-2 font-mono text-emerald-400 font-semibold">
+            <span className="ml-2 font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
               ({formatBytes(totalSavedBytes)} saved · {totalSavedPct}% reduction)
             </span>
           )}
@@ -60,9 +60,9 @@ export const DownloadActionBar: React.FC = () => {
             <button
               type="button"
               onClick={handleDownloadSingle}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700 transition-colors cursor-pointer"
             >
-              <Download className="w-3.5 h-3.5 text-zinc-300" />
+              <Download className="w-3.5 h-3.5 text-zinc-600 dark:text-zinc-400" />
               <span>Download Active</span>
             </button>
           )}
@@ -71,9 +71,9 @@ export const DownloadActionBar: React.FC = () => {
             <button
               type="button"
               onClick={handleDownloadZip}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-zinc-950 shadow-sm transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-zinc-200 dark:text-zinc-900 shadow-sm transition-colors cursor-pointer"
             >
-              <FolderDown className="w-3.5 h-3.5 text-zinc-950" />
+              <FolderDown className="w-3.5 h-3.5 text-white dark:text-zinc-900" />
               <span>Download All ({doneItems.length})</span>
             </button>
           )}
